@@ -7,9 +7,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -24,6 +24,17 @@ public class Main {
         for(ArchiveEntry entry : archiveEntries) {
             System.out.println(entry);
         }
-        
+        System.out.println("Enter value:");
+        Double value = Double.parseDouble(scanner.nextLine());
+        Predicate<ArchiveEntry> greaterThanValue = obj -> obj.getGlobalInfluence() >= value;
+        List<ArchiveEntry> filteredEntries= archiveEntries.stream().filter(greaterThanValue).toList();
+        List<String> filteredNames = new ArrayList<>();
+        for(ArchiveEntry entry : filteredEntries) {
+            filteredNames.add(entry.getHero());
+        }
+        List<String> uniqueFilteredHeroes = filteredNames.stream().distinct().collect(Collectors.toList());
+        for(String hero : uniqueFilteredHeroes) {
+            System.out.println(hero);
+        }
     }
 }
