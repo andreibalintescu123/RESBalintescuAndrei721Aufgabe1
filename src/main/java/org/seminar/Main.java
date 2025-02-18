@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLOutput;
 import java.util.*;
@@ -43,7 +44,29 @@ public class Main {
         for(ArchiveEntry entry : filteredGalactic) {
             System.out.println(entry.getDate() + ": " + entry.getHero() + "vs. " + entry.getVillain() + " - " + entry.getPlace());
         }
+        Map<ConfrontationType, Integer> confrontationsPerType = new HashMap<>();
+        for(ArchiveEntry entry : archiveEntries) {
+            confrontationsPerType.put(entry.getConfrontationType(), confrontationsPerType.getOrDefault(entry.getConfrontationType(), 0) + 1);
+        }
+
+        Map<ConfrontationType, Double> globalInfluencePerType = new HashMap<>();
+        for(ArchiveEntry entry : archiveEntries) {
+            globalInfluencePerType.put(entry.getConfrontationType(), globalInfluencePerType.getOrDefault(entry.getConfrontationType(), 0.00) + entry.getGlobalInfluence());
+        }
 
 
+        List<Map.Entry<ConfrontationType, Integer>> sortedConfrontations = new ArrayList<>(confrontationsPerType.entrySet());
+        sortedConfrontations.sort(Comparator
+                .comparing(Map.Entry<ConfrontationType, Integer>::getValue, Comparator.reverseOrder()));
+
+        List<Map.Entry<ConfrontationType,Double>> sortedGlobalInfluences = new ArrayList<>(globalInfluencePerType.entrySet());
+        sortedGlobalInfluences.sort(Comparator.comparing(Map.Entry<ConfrontationType, Double>::getValue, Comparator.reverseOrder()));
+
+        FileWriter writer = new FileWriter("src/main/java/Files/bericht_konfrontationen.txt");
+        for (Map.Entry<ConfrontationType, Integer> entry : sortedConfrontations) {
+            writer.write(entry.getKey() + "&" + entry.getValue() + "$" + globalInfluencePerType.get(entry.getKey()) + "\n" );
+        }
+        writer.close();
     }
+
 }
