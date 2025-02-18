@@ -1,12 +1,14 @@
 package org.seminar;
 
 import Entities.ArchiveEntry;
+import Entities.ConfrontationType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -36,5 +38,12 @@ public class Main {
         for(String hero : uniqueFilteredHeroes) {
             System.out.println(hero);
         }
+        Predicate<ArchiveEntry> checkGalactic = obj -> obj.getConfrontationType().equals(ConfrontationType.Galaktisch);
+        List<ArchiveEntry> filteredGalactic = archiveEntries.stream().filter(checkGalactic).sorted(Comparator.comparing(ArchiveEntry::getDate).reversed()).toList();
+        for(ArchiveEntry entry : filteredGalactic) {
+            System.out.println(entry.getDate() + ": " + entry.getHero() + "vs. " + entry.getVillain() + " - " + entry.getPlace());
+        }
+
+
     }
 }
